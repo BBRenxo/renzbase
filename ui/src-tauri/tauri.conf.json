@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schema.tauri.app/config/2.0.0",
+  "productName": "RenzBase",
+  "version": "0.1.0",
+  "identifier": "com.renzbase.ui",
+  "build": {
+    "frontendDist": "../src",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "",
+    "beforeBuildCommand": ""
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "RenzBase",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false,
+        "skipTaskbar": false,
+        "theme": "Dark",
+        "backgroundColor": "#1a1a1a",
+        "center": true,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": null,
+      "dangerousDisableAssetCspModification": false
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/icon.png"
+    ],
+    "category": "DeveloperTool",
+    "shortDescription": "RenzBase Roblox executor UI",
+    "longDescription": "Tauri-based frontend for RenzBase, a Roblox script executor with Monaco editor."
+  }
+}

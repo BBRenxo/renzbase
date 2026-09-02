@@ -1,0 +1,8 @@
+
+# Injector build outputs
+injector/RenzInjector/Build/
+injector/RenzInjector/x64/
+
+# Tauri build outputs
+ui/src-tauri/target/
+ui/src-tauri/Cargo.lock
