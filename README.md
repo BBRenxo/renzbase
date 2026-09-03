@@ -52,14 +52,12 @@ file: `dll/Source/Roblox/Offsets/Offsets.h`.
 Last update: **Sep 2 2026**, Roblox version `e7d81637d42c4b23`. Source:
 [roblox-dumper 3.6](https://git.jonah.cool/jonah/roblox-dumper).
 
-## Test scores
+## Test score
 
-| Test type | Score |
-|-----------|-------|
-| UNC (functions exist) | ~75% |
-| sUNC (functions actually work) | 75% (49/65) |
+- **UNC**: ~75% (49/65) — most functions exist
+- **sUNC**: partial — basic functions work, but `loadstring(game:HttpGet(...))()` fails because of Luau parser issues in the test script body. Use `HttpGet()` + `execute()` instead.
 
-Tested in Fair Dunc Lab (the standard sUNC tester).
+See `Release/README.md` for full breakdown.
 
 ## License
 
