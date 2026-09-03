@@ -18,6 +18,12 @@ import win32file
 import win32pipe
 import win32con
 
+# Check for stdin pipe first (allows sending file via: cat file | python send_script.py)
+if not sys.stdin.isatty():
+    SCRIPT = sys.stdin.read()
+else:
+    SCRIPT = None
+
 PIPE = r"\\.\pipe\RenzBase"
 
 def send(script: str) -> bool:
@@ -55,6 +61,10 @@ def send(script: str) -> bool:
         return False
 
 def main():
+    # If script was piped via stdin, send it directly
+    if SCRIPT is not None:
+        send(SCRIPT)
+        sys.exit(0)
     if len(sys.argv) < 2:
         print("Usage:")
         print("  python send_script.py <script.lua>           # file")
