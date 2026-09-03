@@ -11,11 +11,31 @@ Three files. That's all.
 ## How to use
 
 1. **Start Roblox**, join any game.
-2. **Run Loader.exe**.
-3. **Send scripts**:
+2. **If Roblox has Hyperion** (most Roblox versions), you need a Hyperion bypass
+   tool like **Potassium** to be attached first. Without it, Loader.exe will
+   crash the game. RenzBase does NOT bypass Hyperion on its own.
+3. **Run Loader.exe**.
+4. **Send scripts**:
    ```
    python send_script.py myscript.lua
    ```
+
+### "Does it have client modification bypass?"
+
+Short answer: **no, not Hyperion**. RenzBase is a Lua-level executor that hooks
+into Roblox's Lua state. The Hyperion/Byfron integrity check that prevents
+DLL injection is handled by a separate tool (Potassium or similar) that you
+attach first.
+
+What RenzBase DOES do:
+- Hook Roblox's Lua functions in memory
+- Compile and run Lua scripts sent via named pipe
+- 75%+ sUNC test coverage (basic executor APIs work)
+
+What it does NOT do:
+- Bypass Hyperion/Byfron (use Potassium for that)
+- Patch Roblox's binaries
+- Bypass game-specific anti-cheats (those are server-side mostly)
 
 ## What works (verified Sep 3, 2026)
 

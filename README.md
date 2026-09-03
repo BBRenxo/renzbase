@@ -35,20 +35,38 @@ the `Release/` folder.
 
 ## If nothing happens when you run Loader.exe
 
-Roblox has a security thing called Hyperion that sometimes blocks DLLs.
-When that happens, Roblox closes itself the moment Loader.exe tries to
-inject.
+**Short answer: you need a separate tool called Potassium first.**
 
-If that happens to you, you need another tool called **Potassium** to attach
-first:
+Roblox uses something called **Hyperion** (also called "Byfron") to block
+DLL injection. It's a per-game integrity check that runs every time a
+script instance tries to load. RenzBase does **not** bypass Hyperion on
+its own — we layer on top of an existing bypass.
 
-1. Open Potassium
-2. Click **Attach**
-3. Wait until it says "Attached"
-4. Then run `Loader.exe` again
+**To use RenzBase, you need:**
 
-If even that fails, get the latest Hyperion-bypassing tool from the
-Roblox modding community and use it first.
+1. A Hyperion bypass tool. The one most people use is **Potassium**.
+   Open Potassium, click **Attach**, wait for "Attached", leave it
+   running in the background.
+2. Then run `Loader.exe`. Roblox stays open and Module.dll loads.
+
+If you don't have Potassium or similar, get it from the Roblox modding
+community. There are several — they're updated frequently as Roblox
+shuts down the older ones.
+
+## What's this "client modification bypass" people ask about?
+
+When someone asks "does it have client modification bypass?" they
+usually mean one of these:
+
+| What they mean | What we have |
+|----------------|--------------|
+| Bypass Roblox's Hyperion/Byfron integrity checks | ❌ No — that's Potassium's job |
+| Bypass Roblox's anti-cheat (server-side usually) | ❌ N/A — that's a different problem |
+| Hook and modify memory in the running game | ✅ Yes — Module.dll does this |
+| Run custom Lua scripts in a running game | ✅ Yes — that's the whole point |
+
+So: we depend on a Hyperion bypass tool (Potassium or similar), and we
+do the in-memory hooking + Lua hooking on top of that.
 
 ## What's in the repo
 
