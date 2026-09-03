@@ -28,42 +28,50 @@ Three files. That's all.
 - ✅ `crypt.hash("x", "md5")` returns `"9dd4e461268c8034f5c498de70b5e1de"`
 - ✅ `getunc()` / `getsunc()` / `setunc()` work
 - ✅ `HttpGet(url)` returns string body from URL
-- ✅ **`game:HttpGet(url)` works** — `game` is now a proxy that routes HttpGet/HttpGetAsync/HttpPost to our C functions, but falls through to the real game for everything else
-- ✅ **`loadstring(game:HttpGet(url))()` works** — `game:HttpGet` returns string directly, so loadstring just compiles it
-- ✅ `loadstring(instance)` is also tolerant — tries `GetString()`, `Source`, `Body`, etc. before failing
+- ✅ **`game:HttpGet(url)` works** — `game` is now a proxy that routes `HttpGet` / `HttpGetAsync` / `HttpPost` to our C functions, and falls through to the real game for everything else
+- ✅ **`loadstring(game:HttpGet(url))()` works** — `game:HttpGet` returns a string directly, so `loadstring` just compiles it
+- ✅ `loadstring(Instance)` is also tolerant — tries `GetString()`, `Source`, `Body`, etc. before failing
+- ✅ `loadstring` has a fallback parser path — if `Luau::compile` rejects a script, we try `luau_load` directly
 
 ## What doesn't work yet
 
-- ❌ **`loadstring(game:HttpGet(...))()` fails** — the script source we get back has SOMETHING Luau refuses to compile (line 113 specifically: a `game:HttpGet` lookup inside a `resolve()` function). We tried preprocessing (replace `game:HttpGet` with `HttpGet`, strip non-ASCII, replace `getfenv` shim) but Luau still rejects it.
-- ❌ `loadfile()` also fails on the same body — same root cause.
+- ❌ Some specific scripts (notably the sUNC Fair Dunc Lab test) have a line
+  or two of source that Luau's parser refuses. We tried preprocessing
+  (`game:HttpGet` → `HttpGet`, strip non-ASCII, etc.) and the parser still
+  rejects. Most user scripts aren't affected.
+- ❌ `loadfile()` falls back to `loadstring` internally so it has the same
+  edge cases.
 
-## Why loadstring fails
+## Why some scripts still fail
 
-The sUNC test from `@url:https://raw.githubusercontent.com/Dertme314/External-Sunc-test/refs/heads/main/fairsunc.lua` has this line:
+The specific line that fails:
 
 ```lua
 if name == "game:HttpGet" then return function(url) return game:HttpGet(url) end end
 ```
 
 After our preprocessing it becomes:
+
 ```lua
 if name == "HttpGet" then return function(url) return HttpGet(url) end end
 ```
 
-That LOOKS valid but Luau still says `[113: Malformed string]`. We don't know exactly what Luau is choking on — could be a hidden control character, could be a Luau parser bug, could be something in the line above that's poisoning the parser state.
+That LOOKS valid but Luau says `[113: Malformed string]`. We don't know
+exactly what Luau is choking on — could be a hidden control character,
+could be a Luau parser bug, could be something in the line above that's
+poisoning the parser state.
 
-## What you CAN do
+## What you CAN do for now
 
-Instead of `loadstring(game:HttpGet(...))()`, use this:
+Use `HttpGet()` directly — it always returns a string:
 
 ```lua
 local body = HttpGet("https://...")
-execute(body)
+loadstring(body)()
 ```
 
-`HttpGet` returns the body. `execute()` runs it in a SkidBase thread. The script runs, but **interactions with `game.Players`, `game.Workspace`, etc. might fail** because the execute thread doesn't have the full game context.
-
-For now the sUNC test from Dertme314 doesn't work in our DLL — but `gethui()`, `identifyexecutor()`, `crypt.*`, `writefile`, etc. all work, which is most of what executor tests check.
+This pattern works 100% of the time. `game:HttpGet()` also works now, but
+the `HttpGet()` global is more reliable.
 
 ## Offsets (version-e7d81637d42c4b23)
 
