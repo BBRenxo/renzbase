@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{12345678-1234-1234-1234-1234567890AB}</ProjectGuid>
+    <RootNamespace>SkidBase</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>SkidBase</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>Release\</OutDir>
+    <TargetName>Module</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(ProjectDir)Dependencies\Luau\Common\include;$(ProjectDir)Dependencies\Luau\Ast\include;$(ProjectDir)Dependencies\Luau\Ast\src;$(ProjectDir)Dependencies\Luau\VM\include;$(ProjectDir)Dependencies\Luau\VM\src;$(ProjectDir)Dependencies\Luau;$(ProjectDir)Dependencies\Luau\Bytecode\include;$(ProjectDir)Dependencies\Luau\Compiler\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Dependencies\Luau\Ast\src\Allocator.cpp" />
+    <ClCompile Include="Dependencies\Luau\Ast\src\Ast.cpp" />
+    <ClCompile Include="Dependencies\Luau\Ast\src\Confusables.cpp" />
+    <ClCompile Include="Dependencies\Luau\Ast\src\Cst.cpp" />
+    <ClCompile Include="Dependencies\Luau\Ast\src\Lexer.cpp" />
+    <ClCompile Include="Dependencies\Luau\Ast\src\Location.cpp" />
+    <ClCompile Include="Dependencies\Luau\Ast\src\Parser.cpp" />
+    <ClCompile Include="Dependencies\Luau\Ast\src\PrettyPrinter.cpp" />
+    <ClCompile Include="Dependencies\Luau\Bytecode\src\BytecodeBuilder.cpp" />
+    <ClCompile Include="Dependencies\Luau\Bytecode\src\BytecodeGraph.cpp" />
+    <ClCompile Include="Dependencies\Luau\Bytecode\src\Sccp.cpp" />
+    <ClCompile Include="Dependencies\Luau\Common\src\BytecodeWire.cpp" />
+    <ClCompile Include="Dependencies\Luau\Common\src\StringUtils.cpp" />
+    <ClCompile Include="Dependencies\Luau\Common\src\TimeTrace.cpp" />
+    <ClCompile Include="Dependencies\Luau\Compiler\src\BuiltinFolding.cpp" />
+    <ClCompile Include="Dependencies\Luau\Compiler\src\Builtins.cpp" />
+    <ClCompile Include="Dependencies\Luau\Compiler\src\Compiler.cpp" />
+    <ClCompile Include="Dependencies\Luau\Compiler\src\ConstantFolding.cpp" />
+    <ClCompile Include="Dependencies\Luau\Compiler\src\CostModel.cpp" />
+    <ClCompile Include="Dependencies\Luau\Compiler\src\lcode.cpp" />
+    <ClCompile Include="Dependencies\Luau\Compiler\src\TableShape.cpp" />
+    <ClCompile Include="Dependencies\Luau\Compiler\src\Types.cpp" />
+    <ClCompile Include="Dependencies\Luau\Compiler\src\ValueTracking.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lapi.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\laux.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lbaselib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lbitlib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lbuffer.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lbuflib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lbuiltins.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lclass.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lclasslib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lcorolib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\ldblib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\ldebug.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\ldo.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lfunc.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lgc.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lgcdebug.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\linit.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lintlib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lmathlib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lmem.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lnumprint.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lobject.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\loslib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lperf.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lstate.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lstring.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lstrlib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\ltable.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\ltablib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\ltm.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\ludata.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lutf8lib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lveclib.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lvector.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lvmexecute.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lvmload.cpp" />
+    <ClCompile Include="Dependencies\Luau\VM\src\lvmutils.cpp" />
+    <ClCompile Include="Source\Core\Execution\Execution.cpp" />
+    <ClCompile Include="Source\Core\unc\Unc.cpp" />
+    <ClCompile Include="Source\Core\Filesystem\Filesystem.cpp" />
+    <ClCompile Include="Source\Core\dllmain.cpp" />
+    <ClCompile Include="Source\Core\TeleportHandler.cpp" />
+    <ClCompile Include="Source\Roblox\Environment\Instances.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Core\Execution\Execution.h" />
+    <ClInclude Include="Source\Core\TeleportHandler.hpp" />
+    <ClInclude Include="Source\Roblox\Environment\Environment.h" />
+    <ClInclude Include="Source\Roblox\Environment\Instances.h" />
+    <ClInclude Include="Source\Roblox\Environment\Libs\Closures\Closures.h" />
+    <ClInclude Include="Source\Roblox\Environment\Libs\Crypt\Crypt.h" />
+    <ClInclude Include="Source\Roblox\Environment\Libs\Http\Http.h" />
+    <ClInclude Include="Source\Roblox\Environment\Libs\Metatable\Metatable.h" />
+    <ClInclude Include="Source\Roblox\Environment\Libs\Misc\Misc.h" />
+    <ClInclude Include="Source\Roblox\Offsets\Encs.hpp" />
+    <ClInclude Include="Source\Roblox\Offsets\Funcs.h" />
+    <ClInclude Include="Source\Roblox\Offsets\Offsets.h" />
+    <ClInclude Include="Source\Roblox\Offsets\Offsets.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

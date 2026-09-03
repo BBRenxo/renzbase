@@ -26,20 +26,24 @@ def send(script: str) -> bool:
         # Wait briefly for pipe to exist (DLL may still be initializing)
         for _ in range(50):
             try:
+                # 6-arg form: name, desired_access, share_mode, security_attrs,
+                #             creation_disposition, flags_and_attributes
+                # Use sa=NULL (None), no flags (0)
                 handle = win32file.CreateFile(
                     PIPE,
                     win32file.GENERIC_READ | win32file.GENERIC_WRITE,
-                    0, 0, win32file.OPEN_EXISTING, 0, None
+                    0, None, win32file.OPEN_EXISTING, 0, None
                 )
                 break
             except win32pipe.error:
                 time.sleep(0.1)
         else:
-            print("[!] Pipe not available — is Injector.exe running and Module.dll injected?")
+            print("[!] Pipe not available — is Module.dll loaded?")
             return False
 
         try:
-            win32pipe.SetNamedPipeHandleState(handle, win32pipe.PIPE_READMODE_MESSAGE, None, None)
+            # PIPE_READMODE_MESSAGE requires passing a buffer pointer.
+            # Use PIPE_READMODE_BYTE instead so we don't need to set mode.
             data = script.encode('utf-8')
             win32file.WriteFile(handle, data)
             print(f"[+] Sent {len(data)} bytes to {PIPE}")

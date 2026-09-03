@@ -1,4 +1,3 @@
-
 # Injector build outputs
 injector/RenzInjector/Build/
 injector/RenzInjector/x64/
@@ -6,3 +5,12 @@ injector/RenzInjector/x64/
 # Tauri build outputs
 ui/src-tauri/target/
 ui/src-tauri/Cargo.lock
+
+# DLL build outputs
+dll/Release/
+dll/.vs/
+dll/.github/
+
+# Python
+__pycache__/
+*.pyc

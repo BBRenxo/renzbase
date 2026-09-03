@@ -1,0 +1,6 @@
+
+# SkidBase extras
+.vs/
+SkidBase/
+Release/*.pdb
+Release/*.exe
