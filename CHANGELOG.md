@@ -2,6 +2,16 @@
 
 What's new, in plain English.
 
+## Sep 3 2026 — clarify: RenzBase attaches BY ITSELF
+
+User pointed out the README was wrong when it said you need Potassium
+or another bypass tool to use RenzBase. **You don't.** Loader.exe
+does its own injection. Re-worded the README and Release README:
+
+- Removed "you need Potassium first" — that's just wrong
+- FAQ now says: RenzBase attaches on its own, no external tool needed
+- If injection fails, troubleshoot Roblox-side, not tool-side
+
 ## Sep 3 2026 — proxy game + tolerant loadstring
 
 - **`game:HttpGet(url)` works.** We replaced the global `game` with a proxy

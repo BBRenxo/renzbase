@@ -35,37 +35,34 @@ the `Release/` folder.
 
 ## If nothing happens when you run Loader.exe
 
-Roblox has a security check (internally called Hyperion or Byfron) that
-blocks DLL injection. RenzBase does NOT bypass it on its own — you'll
-need a separate tool.
+Sometimes Roblox's integrity check (Hyperion) blocks DLL injection.
+Loader.exe should work without any external tool — that's the whole point
+of RenzBase. If it's NOT working:
 
-Popular options:
-- **Potassium** — a UI tool from the Roblox modding community. Attach
-  first, then run Loader.exe.
-- Other Hyperion bypass tools — search the Roblox modding community
-  for the latest.
+1. Make sure Roblox is running and you're in a game (not just the menu).
+2. Run Loader.exe as Administrator.
+3. If it still doesn't work, try a different Roblox version.
 
-**Honestly, we don't fully know how these tools work** — we just know
-that if you don't use one, Loader.exe either fails silently or crashes
-Roblox.
-
-If you find a bypass tool that works, run it FIRST, leave it running,
-THEN double-click Loader.exe.
+If none of that helps, search the Roblox modding community for Hyperion
+bypass tools — but **RenzBase is designed to work without them**.
 
 ## What's this "client modification bypass" people ask about?
 
 When someone asks "does it have client modification bypass?" they
-usually mean one of these:
+usually mean: "do I need to attach Potassium or Wave or Solara first?"
 
-| What they mean | What we have |
-|----------------|--------------|
-| Bypass Roblox's Hyperion/Byfron integrity checks | ❌ No — that's Potassium or another bypass tool's job |
-| Bypass Roblox's anti-cheat (server-side usually) | ❌ N/A — server-side, not our problem |
-| Hook and modify memory in the running game | ✅ Yes — Module.dll does this AFTER bypass |
-| Run custom Lua scripts in a running game | ✅ Yes — that's the whole point |
+**No.** RenzBase attaches via its own Loader.exe. You don't need any
+other executor or tool running.
 
-So: we depend on a Hyperion bypass tool (Potassium or similar), and we
-do the in-memory Lua hooking on top of that.
+What RenzBase does:
+- Loader.exe injects Module.dll into Roblox's process
+- Module.dll hooks Roblox's Lua state from inside
+- Scripts sent via the named pipe run in the game
+
+What it does NOT do:
+- Run alongside another executor (it replaces them, not complements them)
+- Open a Tauri UI (we don't have one yet, future feature)
+- Bypass server-side anti-cheats (those run on Roblox's servers, not your client)
 
 ## What's in the repo
 
