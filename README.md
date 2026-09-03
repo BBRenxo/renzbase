@@ -35,23 +35,22 @@ the `Release/` folder.
 
 ## If nothing happens when you run Loader.exe
 
-**Short answer: you need a separate tool called Potassium first.**
+Roblox has a security check (internally called Hyperion or Byfron) that
+blocks DLL injection. RenzBase does NOT bypass it on its own — you'll
+need a separate tool.
 
-Roblox uses something called **Hyperion** (also called "Byfron") to block
-DLL injection. It's a per-game integrity check that runs every time a
-script instance tries to load. RenzBase does **not** bypass Hyperion on
-its own — we layer on top of an existing bypass.
+Popular options:
+- **Potassium** — a UI tool from the Roblox modding community. Attach
+  first, then run Loader.exe.
+- Other Hyperion bypass tools — search the Roblox modding community
+  for the latest.
 
-**To use RenzBase, you need:**
+**Honestly, we don't fully know how these tools work** — we just know
+that if you don't use one, Loader.exe either fails silently or crashes
+Roblox.
 
-1. A Hyperion bypass tool. The one most people use is **Potassium**.
-   Open Potassium, click **Attach**, wait for "Attached", leave it
-   running in the background.
-2. Then run `Loader.exe`. Roblox stays open and Module.dll loads.
-
-If you don't have Potassium or similar, get it from the Roblox modding
-community. There are several — they're updated frequently as Roblox
-shuts down the older ones.
+If you find a bypass tool that works, run it FIRST, leave it running,
+THEN double-click Loader.exe.
 
 ## What's this "client modification bypass" people ask about?
 
@@ -60,13 +59,13 @@ usually mean one of these:
 
 | What they mean | What we have |
 |----------------|--------------|
-| Bypass Roblox's Hyperion/Byfron integrity checks | ❌ No — that's Potassium's job |
-| Bypass Roblox's anti-cheat (server-side usually) | ❌ N/A — that's a different problem |
-| Hook and modify memory in the running game | ✅ Yes — Module.dll does this |
+| Bypass Roblox's Hyperion/Byfron integrity checks | ❌ No — that's Potassium or another bypass tool's job |
+| Bypass Roblox's anti-cheat (server-side usually) | ❌ N/A — server-side, not our problem |
+| Hook and modify memory in the running game | ✅ Yes — Module.dll does this AFTER bypass |
 | Run custom Lua scripts in a running game | ✅ Yes — that's the whole point |
 
 So: we depend on a Hyperion bypass tool (Potassium or similar), and we
-do the in-memory hooking + Lua hooking on top of that.
+do the in-memory Lua hooking on top of that.
 
 ## What's in the repo
 
