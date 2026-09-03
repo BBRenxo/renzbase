@@ -42,6 +42,28 @@ The user wants the sUNC test to actually run.
 - **Manual lexing of the body**: write a tiny C++ function that scans
   the body for the specific issue using Luau's Lexer.cpp
 
+### 1.5. Wire up WebSocket wrapper (new, just added)
+
+`Source/Roblox/Environment/Libs/WebSocket/WebSocket.h` has the full
+WebSocket wrapper code (pushed to BBRenxo/SkidBase as dev code
+in commit `2b5a77f`). It exposes:
+- `WebSocket.connect("wss://...")` returns a ws object
+- `:Send(msg)`, `:Close()`, `:OnMessage:Connect(fn)`, `:OnClose:Connect(fn)`
+
+Backend uses Roblox's `WebSocketService` (bypasses Hyperion's network filter).
+
+Tasks:
+- Wire `websocket::connect` into `Register()` so `WebSocket` is a global
+- Test that scripts can do `WebSocket.connect("wss://...") :Send("hi")`
+- Once working, add a `WebSocketGet(url)` alias that does
+  connect + send a GET-like request + collect response + return body string
+- THEN we can replace `HttpGet` with `WebSocketGet` for full
+  Hyperion-bypass
+
+If the loadstring problem is actually a WinHTTP filter thing (Hyperion
+blocking the byte stream from raw.githubusercontent.com), WebSocketGet
+would bypass the issue entirely.
+
 ### 2. Figure out why Injector.exe crashes Roblox
 
 - Run Injector.exe against a test exe (not Roblox) to confirm it works
