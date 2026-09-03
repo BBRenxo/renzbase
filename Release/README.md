@@ -5,9 +5,14 @@ Four files. That's all.
 | File | Purpose |
 |------|---------|
 | `Module.dll` | The Lua runtime. Gets injected into Roblox. |
-| `Injector.exe` | Puts Module.dll into Roblox — beats Hyperion's LDR + NtCreateSection detection. |
+| `Loader.exe` | Puts Module.dll into Roblox — currently the recommended injector. |
 | `send_script.py` | Sends Lua scripts to Module.dll over a named pipe. |
 | `README.md` | This file. |
+
+> **Heads up about Injector.exe:** there's also an experimental Oracle-based
+> `Injector.exe` (Hyperion LDR + NtCreateSection bypass) in some zips.
+> It crashes the game on current Roblox versions. Stick with `Loader.exe`
+> for now — we need a real combined tool, which is coming soon.
 
 ## How to use
 

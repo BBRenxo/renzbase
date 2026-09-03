@@ -12,9 +12,15 @@ Four files go in any folder:
 | File | What it does |
 |------|--------------|
 | `Module.dll` | Does the work. Gets put inside Roblox. |
-| `Injector.exe` | Puts `Module.dll` inside Roblox. **Real Hyperion-aware injector** — handles LDR notifications + NtCreateSection patching automatically. |
+| `Loader.exe` | Puts `Module.dll` inside Roblox. **Currently recommended injector.** |
 | `send_script.py` | Sends your Lua scripts to `Module.dll`. |
 | `README.md` | This file. |
+
+> **Heads up:** we have an experimental `Injector.exe` in the release zip
+> too (Oracle-based Hyperion-bypass). It works on some Roblox versions
+> but crashes the game on others. Stick with `Loader.exe` for now — we
+> need to fix the DLL compatibility issue before `Injector.exe` is stable.
+> A real, combined tool is coming soon.
 
 You can grab them from the **Releases** page (zip), or grab them straight from
 the `Release/` folder.
@@ -22,9 +28,9 @@ the `Release/` folder.
 ## How to use it
 
 1. Open Roblox, join any game.
-2. Put `Injector.exe` and `Module.dll` in the SAME folder.
-3. Double-click `Injector.exe`. A black window pops up and (if successful)
-   prints `injected` when it's done.
+2. Put `Loader.exe` and `Module.dll` in the SAME folder.
+3. Double-click `Loader.exe`. A black window pops up and (if successful)
+   prints `ok found module / ok i will now do my thing / i think it worked`.
 4. In Roblox, hit **F9** to open the developer console. You'll see your prints.
 5. To run a script, open a terminal and type:
    ```
