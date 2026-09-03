@@ -28,11 +28,6 @@ Just opens Roblox's process and uses `CreateRemoteThread` +
 `LoadLibraryA` to inject Module.dll. That's the textbook way to inject
 a DLL, and it works *unless* Roblox's Hyperion security catches it.
 
-### `Injector.exe` (the backup door)
-
-Same idea as Loader.exe, but writes the DLL into memory manually instead
-of using `LoadLibraryA`. Slightly stealthier, also blocked by Hyperion.
-
 ## The flow when you run a script
 
 ```

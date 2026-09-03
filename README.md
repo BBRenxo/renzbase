@@ -8,7 +8,6 @@ Three small files you copy to your computer:
 
 - **`Module.dll`** — does the actual work. Once it's in Roblox, scripts run.
 - **`Loader.exe`** — puts Module.dll inside Roblox.
-- **`Injector.exe`** — backup way to put Module.dll in Roblox.
 
 Plus **`send_script.py`** — sends your Lua scripts to Module.dll.
 
@@ -38,11 +37,9 @@ Roblox has a security system called Hyperion that blocks DLL injection. If Loade
 
 ```
 renzbase/
-├── Release/           # The 4 files you actually run
+├── Release/           # The 3 files you actually run
 ├── dll/               # Module.dll source code (C++)
-├── injector/          # Injector.exe source code (C++)
-├── ui/                # Future: pretty editor (Rust + web)
-├── scripts/           # send_script.py + test scripts
+├── scripts/           # send_script.py + helpers
 └── offsets_reference/ # Where we got the offsets from
 ```
 

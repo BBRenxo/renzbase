@@ -1,6 +1,6 @@
 # RenzBase Release
 
-This is the actual program. Drop these 4 files in a folder. Run them.
+This is the actual program. Drop these 3 files in a folder. Run them.
 
 ## What's here
 
@@ -8,7 +8,6 @@ This is the actual program. Drop these 4 files in a folder. Run them.
 |------|--------------|
 | `Module.dll` | The Lua runtime. Gets injected into Roblox. |
 | `Loader.exe` | Puts Module.dll into Roblox. Run this first. |
-| `Injector.exe` | Backup injector if Loader.exe fails. |
 | `send_script.py` | Sends Lua scripts to Module.dll over a named pipe. |
 
 ## Steps
