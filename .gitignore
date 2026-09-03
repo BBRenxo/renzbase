@@ -1,6 +1,7 @@
 # Injector build outputs
-injector/RenzInjector/Build/
-injector/RenzInjector/x64/
+injector/Build/
+injector/Intermediate/
+injector/x64/
 
 # Tauri build outputs
 ui/src-tauri/target/
@@ -14,3 +15,7 @@ dll/.github/
 # Python
 __pycache__/
 *.pyc
+
+# General junk
+Thumbs.db
+*.log
