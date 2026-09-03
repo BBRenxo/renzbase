@@ -29,6 +29,7 @@ Three files. That's all.
 - ✅ `getunc()` / `getsunc()` / `setunc()` work
 - ✅ `HttpGet(url)` returns string body from URL
 - ✅ `game:HttpGet(url)` ALSO works (script source is preprocessed to call our HttpGet)
+- ✅ **`loadstring(game:HttpGet(url))()` works** — our loadstring accepts Instance args and calls Instance:GetString() to extract the body
 
 ## What doesn't work yet
 
