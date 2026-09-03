@@ -1,114 +1,83 @@
-# Architecture
+# How RenzBase works
 
-## Components
+The short version: a DLL gets smuggled into Roblox, and once inside it
+talks Lua back to you over a named pipe.
 
-RenzBase is a 3-component executor stack:
+## The 3 pieces
 
-### 1. `dll/` — Module.dll (Lua API runtime)
+### `Module.dll` (the brain)
 
-Forked from [RavageDevs/SkidBase](https://github.com/RavageDevs/SkidBase). 736KB.
+This is the part that actually does stuff. It's a regular Windows DLL
+written in C++ that, once loaded into Roblox, does three things:
 
-**What it does**:
-- Resolves Roblox functions (`Print`, `LuauExecute`, `GetGlobalState`, `GetGlobalState`, `LuaDThrow`, `GetCapabilities`) via hardcoded RVAs + `GetModuleHandleA(nullptr)`
-- Walks `global_State` → `main_thread` (lua_State)
-- Registers Lua APIs under Roblox's lua_State: `writefile`, `crypt.hash`, `firetouchinterest`, `identifyexecutor`, etc
-- Spawns a thread that listens on `\\.\pipe\RenzBase` (named pipe, PIPE_TYPE_BYTE mode)
-- Spawns a thread that listens on TCP port 9002 (legacy winsock)
-- On script receive: `luaL_loadstring` → `luau_execute` → output via `print`/`warn`/`error`
+1. **Finds Roblox's Lua state** in memory. Roblox has a global Lua
+   interpreter; the DLL locates it by reading known offsets (like
+   `TaskScheduler` → `ScriptContext` → `main_thread`).
 
-**Key files**:
-- `Source/Core/dllmain.cpp` — entry, pipe listener, TeleportHandler thread
-- `Source/Core/Execution/Execution.h/.cpp` — caps (identity-8), extexecute queue, flagfix()
-- `Source/Core/unc/Unc.h/.cpp` — safe_apply_unc with validation, default Off mode
-- `Source/Core/TeleportHandler.cpp` — calls env::Register(skidstate) on teleport
-- `Source/Roblox/Offsets/Offsets.h` — hardcoded RVAs (Print, LuauExecute, FakeDataModel, etc)
-- `Source/Roblox/Environment/Libs/*/*.h` — every Lua library
+2. **Registers Lua functions** into Roblox's environment. Stuff like
+   `writefile`, `readfile`, `crypt.hash`, `firetouchinterest`,
+   `identifyexecutor`, etc. Roblox doesn't ship these; the DLL adds them.
 
-### 2. `injector/` — Injector.exe (Loader)
+3. **Listens for scripts** on a named pipe (`\\.\pipe\RenzBase`). When a
+   script arrives, the DLL runs it through `luaL_loadstring` then
+   `luau_execute`, and the output shows up in F9.
 
-Volx-derived, simplified. 44KB.
+### `Loader.exe` (the door)
 
-**What it does**:
-- Opens Roblox process handle (PROCESS_ALL_ACCESS)
-- Patches Hyperion `.byfron` section (RVAs from volx's Patches.h)
-- Manual-maps `Module.dll` into Roblox via remote thread + shellcode
-- Resumes process, closes handle
+Just opens Roblox's process and uses `CreateRemoteThread` +
+`LoadLibraryA` to inject Module.dll. That's the textbook way to inject
+a DLL, and it works *unless* Roblox's Hyperion security catches it.
 
-**Limitations**:
-- volx's `.byfron` RVAs are stale (for old Roblox). Without current offsets, Hyperion detects injection and crashes Roblox.
-- **Workaround**: use Potassium Attach first (Potassium.dll handles Hyperion bypass), then run Loader.exe or our Injector.exe — Hyperion is already bypassed, so manual map succeeds.
+### `Injector.exe` (the backup door)
 
-### 3. `ui/` — SkidUI (Tauri editor)
+Same idea as Loader.exe, but writes the DLL into memory manually instead
+of using `LoadLibraryA`. Slightly stealthier, also blocked by Hyperion.
 
-Tauri + Rust + HTML/JS. Source only (binary build needs more RAM than available).
-
-**What it does**:
-- Monaco editor (same engine as VS Code)
-- Tab system for multiple scripts
-- File explorer with AutoExecute folder
-- Attach button → spawns Injector.exe
-- Console panel showing DLL output
-- Settings panel (executor name, theme, etc)
-
-## Named Pipe IPC
-
-The DLL listens on `\\.\pipe\RenzBase` (PIPE_TYPE_BYTE mode):
+## The flow when you run a script
 
 ```
-DLL side:                              Client side:
-CreateNamedPipeW(...)                  CreateFileW("\\\\.\\pipe\\RenzBase", ...)
-ConnectNamedPipe(...)                  WriteFile(handle, script_bytes, ...)
-ReadFile(...)                          CloseHandle(...)
-LuaL_loadstring(script)                ...repeat
-luau_execute(L)
+you                send_script.py              Loader.exe
+ │                      │                          │
+ │  python send_script  │                          │
+ │ ───────────────────► │                          │
+ │                      │  open named pipe         │
+ │                      │ ─────────────────────►   │
+ │                      │      write Lua source    │
+ │                      │ ─────────────────────►   │
+ │                      │                          │
+                                            Module.dll (in Roblox)
+                                                   │
+                                       luaL_loadstring(src)
+                                                   │
+                                          luau_execute(L)
+                                                   │
+                                          output → F9
+                                                   ▼
 ```
 
-`sed_script.py` is a 4KB Python client. Tauri UI does the same thing in Rust.
+## Why the offsets matter
 
-## Offset Lifecycle
+Roblox keeps changing its binary. Every update moves functions around in
+memory. We have a hardcoded list of "where things are" addresses in
+`dll/Source/Roblox/Offsets/Offsets.h`. When Roblox updates:
 
-When Roblox patches (every ~2-4 weeks):
+1. Someone dumps the new binary
+2. They find where Print/LuauExecute/etc ended up
+3. They update Offsets.h
+4. We rebuild the DLL
 
-1. **theo** dumps offsets to JSON: `https://offsets.imtheo.lol/offsets.json`
-2. **We fetch** via `scripts/update_offsets.py`
-3. **We diff** old vs new offsets
-4. **We update** `dll/Source/Roblox/Offsets/Offsets.h` (just the changed RVA)
-5. **We rebuild** DLL
-6. **We rebuild** Injector.exe (Patches.h RVAs also change)
+Right now we use offsets from `roblox-dumper 3.6` for Roblox version
+`e7d81637d42c4b23`. Last verified working Sep 2 2026.
 
-Auto-update script supports 3 mirrors with automatic failover:
-- `https://offsets.imtheo.lol/offsets.json` (main)
-- `https://offsets.femboythighs.org/offsets.json` (dedicated mirror)
-- `https://offsets.uwuhook.club/offsets.json` (domain-only)
+## Hyperion
 
-## sUNC Coverage
+Roblox's anti-cheat. It sits between your DLL and the game's Lua state
+and blocks anything that looks fishy. To get past it without a bypass:
 
-Tested with [Fair Dunc Lab](https://github.com/Dertme314/External-Sunc-test) v4.6:
+- **Potassium** does the bypass externally (its own driver).
+- We don't bundle a bypass because every public one gets detected
+  within weeks.
 
-| Category    | Pass | Total | % |
-|-------------|------|-------|---|
-| Input       | 7    | 7     | 100% |
-| Console     | 4    | 4     | 100% |
-| Metatable   | 3    | 3     | 100% |
-| Thread      | 2    | 2     | 100% |
-| FileSystem  | 9    | 10    | 90% |
-| Crypt       | 8    | 10    | 80% |
-| Closures    | 5    | 7     | 71% |
-| Environment | 3    | 5     | 60% |
-| Misc        | 4    | 8     | 50% |
-| Network     | 1    | 2     | 50% |
-| Drawing     | 3    | 9     | 33% |
-| **Total**   | **49** | **65** | **75%** |
-
-## Future Work
-
-- **Hyperion bypass** (proper, no need for Potassium Attach)
-  - Find current .byfron RVAs (need fresh RE for version-e7d81637d42c4b23)
-  - Patch integrity checks at runtime
-  - Implement VM enter hook for bytecode obfuscation
-- **Auto-update in DLL** — DLL could fetch offsets on first run
-- **UI binary** — needs build on 16GB+ machine (4.8GB available here isn't enough for Rust compile)
-- **Drawing lib** — implement Drawing.new("Line"/"Text"/"Square"/"Circle") with real userdata
-- **Misc lib** — getgc, getconnections, getrunningscripts, getsenv
-- **Network lib** — `request()` returns proper {Success, StatusCode, Body, Headers} table
-- **Debug lib** — server-verified tests require accurate getgc + getinfo
+If you want this DLL to load without Potassium, you need a Hyperion
+emulator (like the user built earlier — `Hyperspace`) and you have to
+plug it in here.
