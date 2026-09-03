@@ -7,13 +7,14 @@ stuff added and the bits that leak stripped out.
 
 ## What you get
 
-Three files go in any folder:
+Four files go in any folder:
 
 | File | What it does |
 |------|--------------|
 | `Module.dll` | Does the work. Gets put inside Roblox. |
-| `Loader.exe` | Puts `Module.dll` inside Roblox. |
+| `Injector.exe` | Puts `Module.dll` inside Roblox. **Real Hyperion-aware injector** — handles LDR notifications + NtCreateSection patching automatically. |
 | `send_script.py` | Sends your Lua scripts to `Module.dll`. |
+| `README.md` | This file. |
 
 You can grab them from the **Releases** page (zip), or grab them straight from
 the `Release/` folder.
@@ -21,10 +22,11 @@ the `Release/` folder.
 ## How to use it
 
 1. Open Roblox, join any game.
-2. Double-click `Loader.exe`. A black window pops up and says something like
-   "ok found module" / "ok i think it worked".
-3. In Roblox, hit **F9** to open the developer console. You'll see your prints.
-4. To run a script, open a terminal and type:
+2. Put `Injector.exe` and `Module.dll` in the SAME folder.
+3. Double-click `Injector.exe`. A black window pops up and (if successful)
+   prints `injected` when it's done.
+4. In Roblox, hit **F9** to open the developer console. You'll see your prints.
+5. To run a script, open a terminal and type:
    ```
    python send_script.py path/to/your/script.lua
    ```
@@ -33,29 +35,30 @@ the `Release/` folder.
    echo 'print("hi from RenzBase")' | python send_script.py
    ```
 
-## If nothing happens when you run Loader.exe
+## If Injector.exe doesn't print "injected"
 
-Sometimes Roblox's integrity check (Hyperion) blocks DLL injection.
-Loader.exe should work without any external tool — that's the whole point
-of RenzBase. If it's NOT working:
+Roblox has a security check (Hyperion/Byfron) that blocks DLL injection.
+Our injector (`Injector.exe`) defeats the standard LDR notification and
+NtCreateSection detection methods, but Roblox is updated frequently and
+sometimes gets ahead of us. If injection fails:
 
-1. Make sure Roblox is running and you're in a game (not just the menu).
-2. Run Loader.exe as Administrator.
-3. If it still doesn't work, try a different Roblox version.
-
-If none of that helps, search the Roblox modding community for Hyperion
-bypass tools — but **RenzBase is designed to work without them**.
+1. Make sure Module.dll is in the same folder as Injector.exe.
+2. Make sure Roblox is fully loaded (you're in a game, not just the menu).
+3. Try again as Administrator.
+4. If still stuck, grab a fresh `Module.dll` (rebuild it from `dll/` source
+   with the latest offsets).
 
 ## What's this "client modification bypass" people ask about?
 
 When someone asks "does it have client modification bypass?" they
 usually mean: "do I need to attach Potassium or Wave or Solara first?"
 
-**No.** RenzBase attaches via its own Loader.exe. You don't need any
+**No.** RenzBase attaches via its own `Injector.exe`. You don't need any
 other executor or tool running.
 
 What RenzBase does:
-- Loader.exe injects Module.dll into Roblox's process
+- Injector.exe injects Module.dll into Roblox's process — handles
+  Hyperion's LDR notification + NtCreateSection detection automatically
 - Module.dll hooks Roblox's Lua state from inside
 - Scripts sent via the named pipe run in the game
 

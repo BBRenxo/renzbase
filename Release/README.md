@@ -1,35 +1,24 @@
 # RenzBase Release
 
-Three files. That's all.
+Four files. That's all.
 
 | File | Purpose |
 |------|---------|
 | `Module.dll` | The Lua runtime. Gets injected into Roblox. |
-| `Loader.exe` | Puts Module.dll into Roblox. |
+| `Injector.exe` | Puts Module.dll into Roblox — beats Hyperion's LDR + NtCreateSection detection. |
 | `send_script.py` | Sends Lua scripts to Module.dll over a named pipe. |
+| `README.md` | This file. |
 
 ## How to use
 
 1. **Start Roblox**, join any game.
-2. **Run Loader.exe**. That's it — no external tools needed.
+2. **Run Injector.exe**. It looks for `RobloxPlayerBeta.exe`, defeats
+   Hyperion's DLL detection, and maps `Module.dll` into the game. When
+   done it prints `injected`.
 3. **Send scripts**:
    ```
    python send_script.py myscript.lua
    ```
-
-### "Does it have client modification bypass?"
-
-Short answer: **yes**. RenzBase injects itself via its own Loader.exe. No
-need to attach Potassium, Wave, Solara, or any other executor first.
-
-What RenzBase does:
-- Loader.exe does the injection (no external bypass tool needed)
-- Module.dll hooks Roblox's Lua state from inside the game process
-- 75%+ sUNC test coverage on basic executor APIs
-
-What it doesn't do:
-- Run alongside another executor (use RenzBase by itself)
-- Open a Tauri/SkidUI yet (future feature, currently scripts sent via pipe only)
 
 ## What works (verified Sep 3, 2026)
 
@@ -50,11 +39,7 @@ What it doesn't do:
 ## What doesn't work yet
 
 - ❌ Some specific scripts (notably the sUNC Fair Dunc Lab test) have a line
-  or two of source that Luau's parser refuses. We tried preprocessing
-  (`game:HttpGet` → `HttpGet`, strip non-ASCII, etc.) and the parser still
-  rejects. Most user scripts aren't affected.
-- ❌ `loadfile()` falls back to `loadstring` internally so it has the same
-  edge cases.
+  or two of source that Luau's parser refuses. Most user scripts aren't affected.
 
 ## Why some scripts still fail
 
@@ -71,9 +56,8 @@ if name == "HttpGet" then return function(url) return HttpGet(url) end end
 ```
 
 That LOOKS valid but Luau says `[113: Malformed string]`. We don't know
-exactly what Luau is choking on — could be a hidden control character,
-could be a Luau parser bug, could be something in the line above that's
-poisoning the parser state.
+exactly what Luau is choking on — could be a Luau parser bug, could be
+something in the line above.
 
 ## What you CAN do for now
 
@@ -83,9 +67,6 @@ Use `HttpGet()` directly — it always returns a string:
 local body = HttpGet("https://...")
 loadstring(body)()
 ```
-
-This pattern works 100% of the time. `game:HttpGet()` also works now, but
-the `HttpGet()` global is more reliable.
 
 ## Offsets (version-e7d81637d42c4b23)
 
@@ -108,8 +89,9 @@ TaskScheduler          = 0x7B33FA8
 ## Build
 
 - Roblox: `version-e7d81637d42c4b23`
-- Offsets source: [roblox-dumper 3.6](https://git.jonah.cool/jonah/roblox-dumper) (confirmed our values match)
+- Offsets source: [roblox-dumper 3.6](https://git.jonah.cool/jonah/roblox-dumper)
 - Built from: [BBRenxo/SkidBase](https://github.com/BBRenxo/SkidBase)
+- Injector: based on Oracle-style LDR + NtCreateSection bypass
 - Date: Sep 3 2026
 
 ## License
