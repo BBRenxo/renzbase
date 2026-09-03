@@ -28,8 +28,9 @@ Three files. That's all.
 - ✅ `crypt.hash("x", "md5")` returns `"9dd4e461268c8034f5c498de70b5e1de"`
 - ✅ `getunc()` / `getsunc()` / `setunc()` work
 - ✅ `HttpGet(url)` returns string body from URL
-- ✅ `game:HttpGet(url)` ALSO works (script source is preprocessed to call our HttpGet)
-- ✅ **`loadstring(game:HttpGet(url))()` works** — our loadstring accepts Instance args and calls Instance:GetString() to extract the body
+- ✅ **`game:HttpGet(url)` works** — `game` is now a proxy that routes HttpGet/HttpGetAsync/HttpPost to our C functions, but falls through to the real game for everything else
+- ✅ **`loadstring(game:HttpGet(url))()` works** — `game:HttpGet` returns string directly, so loadstring just compiles it
+- ✅ `loadstring(instance)` is also tolerant — tries `GetString()`, `Source`, `Body`, etc. before failing
 
 ## What doesn't work yet
 
