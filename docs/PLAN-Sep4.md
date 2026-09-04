@@ -26,6 +26,30 @@
 
 ## Tasks For Tomorrow (In Order)
 
+### 0. Check BaseAddress offset claim (Sep 3 announcement)
+
+Discord announcement: "Roblox has updated the Base address offset. To
+have the real base address you must do:
+    inline constexpr uintptr_t BaseAddress = 0x30;
+    uintptr_t base = memory::read<uintptr_t>(memory::get_base() + Offsets::BaseAddress);"
+
+Possibility: `GetModuleHandleA(nullptr)` returns the Roblox module's
+load address, but Roblox might have done some kind of relocations
+where the real code base is now at `[module+0x30]`. Or it could be
+fake/test info.
+
+**Don't apply yet**. Reason: our current `krah() = GetModuleHandleA`
+works fine (we proved it earlier today). If we switch to the new
+method and `0x30` doesn't actually contain the real base, EVERY
+address becomes wrong and we crash.
+
+Instead:
+- Test the current DLL (after OpcodeLookupTable revert) and see if it
+  works WITHOUT the BaseAddress change
+- If it crashes, try this BaseAddress=0x30 trick as a fallback
+- Verify by reading the value at `GetModuleHandleA + 0x30` and seeing
+  if it's a plausible pointer
+
 ### 1. Fix `loadstring(game:HttpGet(...))()` (highest priority)
 
 The user wants the sUNC test to actually run.
